@@ -10,38 +10,24 @@ import { database } from "./firebase";
 import { get, query, onChildAdded, ref } from "firebase/database";
 
 export default function Content() {
-  const [dt, setDt] = React.useState([{ phone: "", pass: "", code: "" }]);
-  const dbRef = ref(database, "users");
-  const qw = query(dbRef);
-  const im = [];
-
-  onChildAdded(qw, (s) => {
-    const dataBody = document.getElementById("dataBody");
-    console.log(s.val().code);
-    const phoneele = document.getElementById(s.val().phone);
-    if (phoneele) {
-      phoneele.addEventListener("click", (e) => {
-        navigator.clipboard.writeText(s.val().phone).then(
-          function () {
-            console.log("Async: Copying to clipboard was successful!");
-          },
-          function (err) {
-            console.error("Async: Could not copy text: ", err);
-          },
-        );
-      });
-    }
-    const row = document.createElement("tr");
-    if (s.exists) {
-      row.innerHTML = `
-    <td class="responstable">${s.val().phone}</td>
-        <td class="responstable ">${s.val().pass}</td>
-        <td class="responstable">${s.val().code}</td>
-        <!-- Add more cells as per your data structure -->
-    `;
-      dataBody.appendChild(row);
-    }
-  });
+  const [dt, setDt] = React.useState([]);
+  React.useEffect(() => {
+    const dbRef = ref(database, "users");
+    const data = [{ phone: "", pass: "", code: "" }];
+    const appendData = (da) => {
+      setDt((prevState) => [...prevState, da]);
+    };
+    const qw = query(dbRef);
+    onChildAdded(qw, (s) => {
+      const dataBody = document.getElementById("dataBody");
+      const phoneele = document.getElementById(s.val().phone);
+      !data.includes(s.val()) ? data.push(s.val()) : null;
+      const row = document.createElement("tr");
+      if (s.exists) {
+        appendData(s.val());
+      }
+    });
+  }, []);
   return (
     <Paper sx={{ maxWidth: 936, margin: "auto", overflow: "hidden" }}>
       <AppBar

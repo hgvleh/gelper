@@ -50,6 +50,11 @@
   display: block;
   word-wrap: break-word;
   max-width: 7em;
+  padding: 0.5em;
+}
+.responstable td:hover {
+  background-color: #d9e0e0;
+  cursor: pointer;
 }
 .responstable td:first-child {
   display: table-cell;
